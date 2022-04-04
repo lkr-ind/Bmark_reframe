@@ -193,6 +193,6 @@ if __name__ == '__main__':
 
             plot_scaling_benchmark(
                 rows=rows_where_the_name_contains(name, scaling_type),
-                filename=f'{name}_{scaling_type}.pdf')
+                filename=f'build/{name}_{scaling_type}.pdf')
 
     # TODO: Plot some Trove?

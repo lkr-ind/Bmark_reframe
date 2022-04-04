@@ -1,5 +1,7 @@
 import os
 import pandas as pd
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 
 from datetime import datetime
 from glob import glob
@@ -23,7 +25,9 @@ class ReFrameBenchmarkLine:
         self.partition = None                 # e.g.  slurm-mpirun
         self.dependencies = None              # e.g.  intel-oneapi-openmpi
         self.num_tasks = None                 # e.g.  128
+        self.num_cpus_per_task = None         # e.g.  2
         self.num_tasks_per_node = None        # e.g.  128
+        self.num_total_cpus = None            # e.g.  256
 
         self.metric_name = None               # e.g.  Total elapsed time
         self.metric_value = None              # e.g.  41.51
@@ -52,7 +56,10 @@ class ReFrameBenchmarkLine:
         self.reframe_version = self._extract_reframe_version()
         self._set_name_and_system()
         self.num_tasks = int(self._value_of('num_tasks'))
+        self.num_cpus_per_task = self._extract_num_cpus_per_task()
         self.num_tasks_per_node = int(self._value_of('num_tasks_per_node'))
+        self.num_total_cpus = self.num_tasks * self.num_cpus_per_task
+
         self.metric_name = self._extract_metric_name()
         self.metric_value = float(self._value_of(self.metric_name))
         self.metric_reference = float(self._extract_metric_ref())
@@ -75,6 +82,10 @@ class ReFrameBenchmarkLine:
 
     def _value_of(self, s) -> str:
         return next(x.split('=')[1] for x in self._raw_line.split('|') if s in x)
+
+    def _extract_num_cpus_per_task(self):
+        val = self._value_of('num_cpus_per_task')
+        return 1 if val == 'null' else int(val)
 
     def _extract_reframe_version(self) -> str:
         return self._raw_line.split('|')[1].split()[1].split('+')[0]
@@ -133,16 +144,55 @@ def create_full_data_frame(relative_root: str) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=ReFrameBenchmarkLine.column_names())
 
 
-def plot_ramses_strong(data_frame):
-    """Plot a strong scaling plot for Ramses"""
+# ############################ Plotting specific ##############################
+
+mpl.rcParams['axes.labelsize'] = 15
+mpl.rcParams['lines.linewidth'] = 1
+mpl.rcParams['lines.markersize'] = 5
+mpl.rcParams['xtick.labelsize'] = 14
+mpl.rcParams['ytick.labelsize'] = 14
+mpl.rcParams['xtick.direction'] = 'in'
+mpl.rcParams['ytick.direction'] = 'in'
+mpl.rcParams['xtick.top'] = True
+mpl.rcParams['ytick.right'] = True
+mpl.rcParams['axes.linewidth'] = 1.2
+
+
+def rows_where_the_name_contains(*args) -> pd.DataFrame:
+    return df[[all(a.lower() in str(name).lower() for a in args)
+               for name in df['name']]]
+
+
+def plot_scaling_benchmark(rows, filename):
+    """Plot a scaling benchmark given a set of pandas df rows and a filename"""
+
+    if len(rows) == 0:
+        raise ValueError(f'Failed to plot {filename}. Had no data')
+
+    plt.plot(rows['num_total_cpus'],
+             rows['metric_value'],
+             marker='o',
+             ms=10,
+             markerfacecolor='white',
+             markeredgecolor='blue')
+
+    plt.xlabel('# tasks')
+    plt.ylabel(list(rows['metric_name'])[0])
+
+    plt.tight_layout()
+    plt.savefig(filename, transparent=True)
+    return plt.close()
 
 
 if __name__ == '__main__':
 
     df = create_full_data_frame(relative_root='..')
 
-    # plot_ramses_strong(df)
-    # plot_ramses_weak(df)
-    # plot_sphng_strong(df)
-    # plot_sphng_strong(df)
-    # plot_trove(df)
+    for scaling_type in ('weak', 'strong'):
+        for name in ('Ramses', 'Sphng'):
+
+            plot_scaling_benchmark(
+                rows=rows_where_the_name_contains(name, scaling_type),
+                filename=f'{name}_{scaling_type}.pdf')
+
+    # TODO: Plot some Trove?

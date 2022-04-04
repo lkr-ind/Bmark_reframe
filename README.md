@@ -35,5 +35,10 @@ Note:- Since the benchmarks take good enough time to run and they may be in the 
 
 ### Steps to visualise the data
 
-Visualisation is 
+To generate a pdf report including the benchmarks.
 
+   ```bash
+   cd graphing && make
+   ```
+
+Note:- Latex and Python are required + the Python requirements (`graphing/requirements.txt`).

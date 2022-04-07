@@ -19,7 +19,7 @@ aout=0.08
 
 &INIT_PARAMS
 filetype='grafic'
-initfile(1)='/cosma/home/ds007/dc-ragt1/RAMSES/data/IC_406'
+initfile(1)='/home/dc-ragt1/Di_benchmarking/Data_ramses/Ramses/IC_406'
 /
 
 &AMR_PARAMS

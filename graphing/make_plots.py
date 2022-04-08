@@ -169,8 +169,11 @@ def plot_scaling_benchmark(rows, filename):
     if len(rows) == 0:
         raise ValueError(f'Failed to plot {filename}. Had no data')
 
-    plt.plot(rows['num_total_cpus'],
-             rows['metric_value'],
+    xs_ys = [(x, y) for x, y in
+             sorted(zip(rows['num_total_cpus'], rows['metric_value']))]
+
+    plt.plot([x for x, _ in xs_ys],
+             [y for _, y in xs_ys],
              marker='o',
              ms=10,
              markerfacecolor='white',

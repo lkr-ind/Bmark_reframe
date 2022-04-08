@@ -172,6 +172,7 @@ def plot_scaling_benchmark(rows, filename):
     xs_ys = [(x, y) for x, y in
              sorted(zip(rows['num_total_cpus'], rows['metric_value']))]
 
+    plt.figure(figsize=(8.4, 4))
     plt.plot([x for x, _ in xs_ys],
              [y for _, y in xs_ys],
              marker='o',

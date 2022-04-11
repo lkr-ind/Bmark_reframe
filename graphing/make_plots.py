@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -6,6 +7,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from glob import glob
 from typing import Optional
+from matplotlib.ticker import FormatStrFormatter
 
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
@@ -163,8 +165,23 @@ def rows_where_the_name_contains(*args) -> pd.DataFrame:
                for name in df['name']]]
 
 
-def plot_scaling_benchmark(rows, filename):
+def save_plot(filename):
+    """Save the plot with a tight layout"""
+
+    plt.tight_layout()
+    plt.savefig(filename, transparent=True)
+    return plt.close()
+
+
+def plot_scaling_benchmark(rows,
+                           color='tab:blue',
+                           filename=None,
+                           fig=None,
+                           label=None):
     """Plot a scaling benchmark given a set of pandas df rows and a filename"""
+
+    if fig is None:
+        plt.figure(figsize=(8.4, 4))
 
     if len(rows) == 0:
         raise ValueError(f'Failed to plot {filename}. Had no data')
@@ -172,31 +189,62 @@ def plot_scaling_benchmark(rows, filename):
     xs_ys = [(x, y) for x, y in
              sorted(zip(rows['num_total_cpus'], rows['metric_value']))]
 
-    plt.figure(figsize=(8.4, 4))
+    ys = np.array([y for _, y in xs_ys])
+
     plt.plot([x for x, _ in xs_ys],
-             [y for _, y in xs_ys],
+             ys/min(ys),
+             lw=1.5,
+             color=color,
              marker='o',
-             ms=10,
+             ms=8,
              markerfacecolor='white',
-             markeredgecolor='blue')
+             markeredgecolor=color,
+             label=label)
 
-    plt.xlabel('# tasks')
-    plt.ylabel(list(rows['metric_name'])[0])
+    plt.xlabel('# cores')
+    # plt.ylabel(list(rows['metric_name'])[0])
+    plt.ylabel('Relative metric')
+    plt.gca().yaxis.set_major_formatter(FormatStrFormatter('%.1f'))
 
-    plt.tight_layout()
-    plt.savefig(filename, transparent=True)
-    return plt.close()
+    if filename is not None:
+        save_plot(filename)
+
+    return None
 
 
-if __name__ == '__main__':
+def plot_trove_strong_scaling_benchmarks():
 
-    df = create_full_data_frame(relative_root='..')
+    fig = plt.figure(figsize=(8.4, 4))
+
+    colors = ('tab:blue', 'tab:orange')
+    for i, input_val in enumerate(('12N', '16N')):
+        plot_scaling_benchmark(
+            rows=rows_where_the_name_contains(f'TROVE_{input_val}'),
+            fig=fig,
+            color=colors[i],
+            label=input_val
+        )
+
+    plt.legend()
+    return save_plot('build/trove_strong.pdf')
+
+
+def plot_ramses_and_sphng_scaling_benchmarks():
 
     for scaling_type in ('weak', 'strong'):
         for name in ('Ramses', 'Sphng'):
 
             plot_scaling_benchmark(
                 rows=rows_where_the_name_contains(name, scaling_type),
-                filename=f'build/{name}_{scaling_type}.pdf')
+                filename=f'build/{name}_{scaling_type}.pdf'
+            )
 
-    # TODO: Plot some Trove?
+    return None
+
+
+if __name__ == '__main__':
+
+    df = create_full_data_frame(relative_root='..')
+
+    plot_ramses_and_sphng_scaling_benchmarks()
+    plot_trove_strong_scaling_benchmarks()

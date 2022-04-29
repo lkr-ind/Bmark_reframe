@@ -1,5 +1,5 @@
 \documentclass[10pt]{article}
-\usepackage{bm, url, graphicx, amsmath, color}
+\usepackage{bm, url, graphicx, amsmath, xcolor}
 \nonstopmode
 
 \title{DiRAC Benchmarks}
@@ -14,7 +14,9 @@
 \subsection{Overview{\footnote{see \url{https://www2.le.ac.uk/offices/itservices/ithelp/services/hpc/dirac/about}}}
 }
 
-The University of Leicester hosts one of five High Performance Computing (HPC) systems that forms part of the DiRAC service. The focus of the service is to support data intensive science problems in Theoretical Astrophysics and Particle Physics. The DIaL service provides:
+The University of Leicester hosts one of five High Performance Computing (HPC) systems that forms
+part of the DiRAC service. The focus of the service is to support data intensive science problems
+in Theoretical Astrophysics and Particle Physics. The DIaL service provides:
 
 \begin{itemize}
 	\item 400 dual-socket nodes with 36 2.3 GHz intel skylake cores, 192 GB RAM per node.
@@ -29,11 +31,13 @@ The University of Leicester hosts one of five High Performance Computing (HPC) s
 \clearpage
 \subsection{Benchmarks}
 
+{\color{orange} WARNING:} Scaling benchmarks are plotted relative to the lowest value of the
+performance metric and are \emph{not} comparable across systems.
+
 \subsubsection{Ramses}
 Ramses is a program to model astrophysical systems, featuring
 self-gravitating, magnetised, compressible, radiative fluid flows. It is based
-on the Adaptive Mesh Refinement (AMR) technique on a fully-threaded graded octree.
-\footnote{see \url{https://bitbucket.org/rteyssie/ramses/src/master/}}
+on the Adaptive Mesh Refinement (AMR) technique on a fully-threaded graded octree.\footnote{see \url{https://bitbucket.org/rteyssie/ramses/src/master/}}
 
 {\color{red} Some outline of the specific system(s) used for the scaling benchmarks}
 
@@ -92,18 +96,27 @@ continuum media.
 \clearpage
 \subsubsection{Trove}
 TROVE (Theoretical ROtational Vibrational Energies) is a suite of programs
-primarily designed for the calculation of molecular infrared line lists.
-\footnote{see \url{https://github.com/Trovemaster/TROVE}}
+primarily designed for the calculation of molecular infrared line lists.\footnote{see \url{https://github.com/Trovemaster/TROVE}}
 
 
 \begin{figure*}[h!]
 	\centering
-	\includegraphics[height=5cm]{trove_strong.pdf}
+	\includegraphics[height=5cm]{trove_strong_12N.pdf}
 	\vspace{0.1cm}
 	\hrule
 	\vspace{0.01cm}
 	\caption{TROVE strong scaling benchmark.}
-	\label{fig::trove_ss}
+	\label{fig::trove_ss_12N}
+\end{figure*}
+
+\begin{figure*}[h!]
+	\centering
+	\includegraphics[height=5cm]{trove_strong_16N.pdf}
+	\vspace{0.1cm}
+	\hrule
+	\vspace{0.01cm}
+	\caption{TROVE strong scaling benchmark.}
+	\label{fig::trove_ss_16N}
 \end{figure*}
 
 

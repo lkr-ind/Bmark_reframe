@@ -72,10 +72,23 @@ class ReFrameBenchmarkLine:
         section = self._raw_line.split('|')[2]
         self.name = section.split()[0]
 
-        system_and_partition = section.split(' on ')[1].split(' using ')[0]
-        self.system, self.partition = system_and_partition.split(':')
+        self.system, self.partition = None, ''
 
-        self.dependencies = section.split(' using ')[1]
+        for a in (' on ', ' @'):
+            for b in (' using ', ':'):
+                try:
+                    string = section.split(a)[1].split(b)[0]
+
+                    if ':' in string:
+                        self.system, self.partition = string.split(':')
+                    else:
+                        self.system = string
+
+                except IndexError:
+                    continue
+
+        delim = ' using ' if 'using' in section else '+'
+        self.dependencies = section.split(delim)[1]
 
         return None
 
@@ -141,7 +154,7 @@ def create_full_data_frame(relative_root: str) -> pd.DataFrame:
             rows += log_file.rows
 
         except (ValueError, IndexError):
-            continue
+            print(f'Failed to parse {file_path}')
 
     return pd.DataFrame(rows, columns=ReFrameBenchmarkLine.column_names())
 
@@ -159,15 +172,23 @@ mpl.rcParams['xtick.top'] = True
 mpl.rcParams['ytick.right'] = True
 mpl.rcParams['axes.linewidth'] = 1.2
 
+colors = ('tab:blue', 'tab:orange')
+
 
 def rows_where_the_name_contains(*args) -> pd.DataFrame:
     return df[[all(a.lower() in str(name).lower() for a in args)
                for name in df['name']]]
 
 
+def rows_where_the_name_contains_and_system_equals(string, system):
+    rows = rows_where_the_name_contains(string)
+    return rows[[s == system for s in rows['system']]]
+
+
 def save_plot(filename):
     """Save the plot with a tight layout"""
 
+    plt.legend()
     plt.tight_layout()
     plt.savefig(filename, transparent=True)
     return plt.close()
@@ -184,7 +205,8 @@ def plot_scaling_benchmark(rows,
         plt.figure(figsize=(8.4, 4))
 
     if len(rows) == 0:
-        raise ValueError(f'Failed to plot {filename}. Had no data')
+        print(f'Failed to plot {filename}. Had no data')
+        return
 
     xs_ys = [(x, y) for x, y in
              sorted(zip(rows['num_total_cpus'], rows['metric_value']))]
@@ -216,17 +238,23 @@ def plot_trove_strong_scaling_benchmarks():
 
     fig = plt.figure(figsize=(8.4, 4))
 
-    colors = ('tab:blue', 'tab:orange')
-    for i, input_val in enumerate(('12N', '16N')):
-        plot_scaling_benchmark(
-            rows=rows_where_the_name_contains(f'TROVE_{input_val}'),
-            fig=fig,
-            color=colors[i],
-            label=input_val
-        )
+    for input_val in ('12N', '16N'):
+        for i, system in enumerate(('dial', 'csd3')):
 
-    plt.legend()
-    return save_plot('build/trove_strong.pdf')
+            rows = rows_where_the_name_contains_and_system_equals(
+                f'TROVE_{input_val}', system
+            )
+
+            plot_scaling_benchmark(
+                rows=rows,
+                fig=fig,
+                color=colors[i],
+                label=system
+            )
+
+        save_plot(f'build/trove_strong_{input_val}.pdf')
+
+    return None
 
 
 def plot_ramses_and_sphng_scaling_benchmarks():
@@ -234,10 +262,21 @@ def plot_ramses_and_sphng_scaling_benchmarks():
     for scaling_type in ('weak', 'strong'):
         for name in ('Ramses', 'Sphng'):
 
-            plot_scaling_benchmark(
-                rows=rows_where_the_name_contains(name, scaling_type),
-                filename=f'build/{name}_{scaling_type}.pdf'
-            )
+            fig = plt.figure(figsize=(8.4, 4))
+
+            for i, system in enumerate(('dial', 'csd3')):
+
+                rows = rows_where_the_name_contains(name, scaling_type)
+                rows = rows[[s == system for s in rows['system']]]
+
+                plot_scaling_benchmark(
+                    rows=rows,
+                    label=system,
+                    fig=fig,
+                    color=colors[i]
+                )
+
+            save_plot(f'build/{name}_{scaling_type}.pdf')
 
     return None
 

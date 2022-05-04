@@ -32,3 +32,13 @@ We are currently including the executables in this repository.
    
 
 Note:- Since the benchmarks take good enough time to run and they may be in the queue for a long time, we suggest to use a method by which you can restore your SSH session such as by using `tmux`.
+
+### Steps to visualise the data
+
+To generate a pdf report including the benchmarks.
+
+   ```bash
+   cd graphing && make
+   ```
+
+Note:- Latex and Python are required + the Python requirements (`graphing/requirements.txt`).

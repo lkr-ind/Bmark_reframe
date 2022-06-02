@@ -50,7 +50,7 @@ class RamsesMPI_strong(RamsesMPI):
     @run_after('setup')
     def set_job_script_variables(self):
 
-        if self.current_partition.num_cpus_per_core > 1:
+        if self.current_partition.processor.num_cpus_per_core > 1:
             self.core_count_1_node = self.current_partition.processor.num_cpus/self.current_partition.processor.num_cpus_per_core
         else:    
             self.core_count_1_node = self.current_partition.processor.num_cpus 
@@ -78,7 +78,7 @@ class RamsesMPI_weak(RamsesMPI):
     @run_after('setup')
     def set_job_script_variables(self):
 
-        if self.current_partition.num_cpus_per_core > 1:
+        if self.current_partition.processor.num_cpus_per_core > 1:
             self.core_count_1_node = self.current_partition.processor.num_cpus/self.current_partition.processor.num_cpus_per_core
         else:    
             self.core_count_1_node = self.current_partition.processor.num_cpus 

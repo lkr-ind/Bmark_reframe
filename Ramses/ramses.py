@@ -8,12 +8,12 @@ import reframe.utility.sanity as sn
 class RamsesMPI(rfm.RunOnlyRegressionTest):
     
     def __init__(self):
-        self.descr = ('Running ramses on one single node')
-        self.time_limit = '0d1h0m0s'
-        self.valid_systems = ['dial:slurm-mpirun']
-        self.valid_prog_environs = ['intel-oneapi-openmpi']
-        self.executable = './ramses3d'
-        self.num_tasks = 128
+
+        self.time_limit = '0d0h10m0s'
+        self.exclusive_access=True
+        self.valid_systems = ['*']
+        self.valid_prog_environs = ['*']
+        self.executable = './ramses3d_20'
         self.executable_opts = ['params.nml']
         reference = {
         'dial:slurm-local': {
@@ -43,13 +43,16 @@ class RamsesMPI(rfm.RunOnlyRegressionTest):
 #------------------------------------------------------------------------------------------------------------------------------------
 @rfm.simple_test
 class RamsesMPI_strong(RamsesMPI):
-    mpi_tasks = parameter(128*(2**i) for i in range(0,5))
+
+    tags = {"Strong"}
+    num_nodes = parameter(2**i for i in range(0,5))
     
-    @run_after('init')
-    def sef_num_tasks(self):
-        self.num_tasks = self.mpi_tasks
-        self.num_tasks_per_node = 128
-        self.descr = ('Strong Scaling Ramses on '+str(self.mpi_tasks/128)+ ' node/s')
+    @run_after('setup')
+    def set_job_script_variables(self):
+        self.core_count_1_node = self.current_partition.processor.num_cpus_per_socket 
+        self.num_tasks = self.num_nodes * self.core_count_1_node
+        self.num_tasks_per_node = self.core_count_1_node    #We are using the full node with MPI tasks.
+        self.descr = ('Strong Scaling Ramses on '+ str(self.num_nodes) + ' node/s')
 
 #------------------------------------------------------------------------------------------------------------------------------------
 # End of strong scaling test.
@@ -64,15 +67,18 @@ class RamsesMPI_strong(RamsesMPI):
 @rfm.simple_test
 class RamsesMPI_weak(RamsesMPI):
     
+    tags = {"Weak"}
     num_nodes = parameter(2**i for i in range(0,4))
-    
-    @run_after('init')
-    def set_1_nodes_executable(self):
-        self.num_tasks = self.num_nodes * 128
-        self.num_tasks_per_node = 128
+
+    @run_after('setup')
+    def set_job_script_variables(self):
+        self.core_count_1_node = self.current_partition.processor.num_cpus_per_socket 
+        self.num_tasks = self.num_nodes * self.core_count_1_node
+        self.num_tasks_per_node = self.core_count_1_node
         self.descr = ('Weak Scaling Ramses on '+str(self.num_nodes)+ ' node/s')
         self.executable_opts = ['params'+str(self.num_nodes)+'_weak.nml']
 
 #------------------------------------------------------------------------------------------------------------------------------------
 # End of weak scaling tests.
 #------------------------------------------------------------------------------------------------------------------------------------
+

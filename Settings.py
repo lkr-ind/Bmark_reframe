@@ -31,6 +31,28 @@ site_configuration = {
             ]
         },
 
+        {
+            'name': 'dial',
+            'descr': 'Dirac Data Intensive @ Leicester',
+            'hostnames': ['.*'],
+            'modules_system': 'lmod',
+            'partitions': [
+                {
+                    'name': 'slurm-mpirun',
+                    'descr': 'Compute nodes',
+                    'scheduler': 'slurm',
+                    'launcher': 'mpirun',
+                    'access': ['-A ds004'],
+                    'environs': ['intel-oneapi-openmpi-dial3','intel19-mpi-dial3'],
+                    'max_jobs': 64,
+                    'processor': {'num_cpus': 128,
+                                  'num_cpus_per_core': 1,
+                                  'num_sockets': 2,
+                                  'num_cpus_per_socket': 64}
+                },
+            ]
+        },
+
          {
             'name': 'generic',
             'descr': 'Generic example system',
@@ -76,6 +98,20 @@ site_configuration = {
         {
             'name': 'intel19_u3-mpi-durham',
             'modules':['intel_comp/2019-update3','intel_mpi/2019-update3'],
+            'cc': 'mpiicc',
+            'cxx': 'mpiicpc',
+            'ftn': 'mpiifort'
+        },
+        {
+            'name':'intel-oneapi-openmpi-dial3',
+            'modules':['intel-oneapi-compilers/2021.2.0','openmpi4/intel/4.0.5'],
+            'cc':'mpicc',
+            'cxx':'mpicxx',
+            'ftn':'mpif90'
+        },
+        {
+            'name': 'intel19-mpi-dial3',
+            'modules':['intel-parallel-studio/cluster.2019.5'],
             'cc': 'mpiicc',
             'cxx': 'mpiicpc',
             'ftn': 'mpiifort'

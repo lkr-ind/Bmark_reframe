@@ -49,7 +49,12 @@ class RamsesMPI_strong(RamsesMPI):
     
     @run_after('setup')
     def set_job_script_variables(self):
-        self.core_count_1_node = self.current_partition.processor.num_cpus_per_socket 
+
+        if self.current_partition.num_cpus_per_core > 1:
+            self.core_count_1_node = self.current_partition.processor.num_cpus/self.current_partition.processor.num_cpus_per_core
+        else:    
+            self.core_count_1_node = self.current_partition.processor.num_cpus 
+        
         self.num_tasks = self.num_nodes * self.core_count_1_node
         self.num_tasks_per_node = self.core_count_1_node    #We are using the full node with MPI tasks.
         self.descr = ('Strong Scaling Ramses on '+ str(self.num_nodes) + ' node/s')
@@ -72,7 +77,12 @@ class RamsesMPI_weak(RamsesMPI):
 
     @run_after('setup')
     def set_job_script_variables(self):
-        self.core_count_1_node = self.current_partition.processor.num_cpus_per_socket 
+
+        if self.current_partition.num_cpus_per_core > 1:
+            self.core_count_1_node = self.current_partition.processor.num_cpus/self.current_partition.processor.num_cpus_per_core
+        else:    
+            self.core_count_1_node = self.current_partition.processor.num_cpus 
+        
         self.num_tasks = self.num_nodes * self.core_count_1_node
         self.num_tasks_per_node = self.core_count_1_node
         self.descr = ('Weak Scaling Ramses on '+str(self.num_nodes)+ ' node/s')

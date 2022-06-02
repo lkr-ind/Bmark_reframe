@@ -11,11 +11,11 @@ import reframe.utility.udeps as udeps
 class Trove(rfm.RunOnlyRegressionTest):
     def __init__(self):
         self.descr = 'Base class for Trove'
-        self.dial_core_count_1_node = 128
         self.time_limit = '0d2h0m0s'
-        self.valid_systems = ['dial:slurm-mpirun']
-        self.valid_prog_environs = ['intel19-mpi']
-        self.executable = './j-trove.x'
+        self.exclusive_access=True
+        self.valid_systems = ['*']
+        self.valid_prog_environs = ['*']
+        self.executable = './j-trove.x_19u3'
         self.postrun_cmds = ['tail -n 100 output.txt']
 
         reference = {
@@ -53,19 +53,23 @@ class Trove(rfm.RunOnlyRegressionTest):
 @rfm.simple_test
 class TROVE_12N(Trove):
 
+    tags = {"12N"}
     param_value = parameter(i for i in range(0,3))
-    num_nodes_current_run = [1,  2,  4]
-    num_mpi_tasks         = [32, 32, 64]
+    num_nodes_current_run =  [1,  2,  4]
+    num_mpi_tasks         =  [32, 32, 64]
 
     def __init__(self):
         super().__init__()
         self.executable_opts = ['N12.inp > output.txt']
+
+    @run_after('setup')
+    def set_job_script_variables(self):
+        self.core_count_1_node = self.current_partition.processor.num_cpus_per_socket
         self.num_tasks = self.num_mpi_tasks[self.param_value]
         self.num_tasks_per_node = int(self.num_tasks/self.num_nodes_current_run[self.param_value])
-        self.num_cpus_per_task = int(self.dial_core_count_1_node/self.num_tasks_per_node)
         self.descr = ('Running Trove on ' + str(self.num_nodes_current_run[self.param_value]) + ' nodes with ' + str(self.num_tasks_per_node) + ' tasks per node and ' + str(self.num_cpus_per_task) +  ' threads per node')
         self.variables= {
-            'OMP_NUM_THREADS':str(self.num_cpus_per_task),
+            'OMP_NUM_THREADS':str(int(self.core_count_1_node/self.num_tasks_per_node)),
             'OMP_PLACES':'cores'
         }
 
@@ -73,14 +77,13 @@ class TROVE_12N(Trove):
 # End of code for file named 12N.
 #--------------------------------------------------------------------------
 
-
-
 #--------------------------------------------------------------------------
 # Code to run the benchmark for input file named 14N.
 #--------------------------------------------------------------------------
 @rfm.simple_test
 class TROVE_14N(Trove):
 
+    tags = {"14N"}
     param_value = parameter(i for i in range(0,5))
     num_nodes_current_run = [1,  2,  4,  8,  16]
     num_mpi_tasks         = [64, 32, 64, 64, 32]
@@ -88,12 +91,15 @@ class TROVE_14N(Trove):
     def __init__(self):
         super().__init__()
         self.executable_opts = ['N14.inp > output.txt']
+
+    @run_after('setup')
+    def set_job_script_variables(self):
+        self.core_count_1_node = self.current_partition.processor.num_cpus_per_socket    
         self.num_tasks = self.num_mpi_tasks[self.param_value]
         self.num_tasks_per_node = int(self.num_tasks/self.num_nodes_current_run[self.param_value])
-        self.num_cpus_per_task = int(self.dial_core_count_1_node/self.num_tasks_per_node)
         self.descr = ('Running Trove on ' + str(self.num_nodes_current_run[self.param_value]) + ' nodes with ' + str(self.num_tasks_per_node) + ' tasks per node and ' + str(self.num_cpus_per_task) +  ' threads per node')
         self.variables= {
-            'OMP_NUM_THREADS':str(self.num_cpus_per_task),
+            'OMP_NUM_THREADS':str(int(self.core_count_1_node/self.num_tasks_per_node)),
             'OMP_PLACES':'cores'
         }
 
@@ -101,14 +107,13 @@ class TROVE_14N(Trove):
 # End of code for file named 14N.
 #--------------------------------------------------------------------------
 
-
-
 #--------------------------------------------------------------------------
 # Code to run the benchmark for input file named 16N.
 #--------------------------------------------------------------------------
 @rfm.simple_test
 class TROVE_16N(Trove):
 
+    tags = {"16N"}
     param_value = parameter(i for i in range(0,5))
     num_nodes_current_run = [1,  2,  4,  8,   16]
     num_mpi_tasks         = [32, 32, 64, 128, 128]
@@ -116,15 +121,21 @@ class TROVE_16N(Trove):
     def __init__(self):
         super().__init__()
         self.executable_opts = ['N16.inp > output.txt']
+
+    @run_after('setup')
+    def set_job_script_variables(self):
+        self.core_count_1_node = self.current_partition.processor.num_cpus_per_socket
         self.num_tasks = self.num_mpi_tasks[self.param_value]
         self.num_tasks_per_node = int(self.num_tasks/self.num_nodes_current_run[self.param_value])
-        self.num_cpus_per_task = int(self.dial_core_count_1_node/self.num_tasks_per_node)
         self.descr = ('Running Trove on ' + str(self.num_nodes_current_run[self.param_value]) + ' nodes with ' + str(self.num_tasks_per_node) + ' tasks per node and ' + str(self.num_cpus_per_task) +  ' threads per node')
         self.variables= {
-            'OMP_NUM_THREADS':str(self.num_cpus_per_task),
+            'OMP_NUM_THREADS':str(int(self.core_count_1_node/self.num_tasks_per_node)),
             'OMP_PLACES':'cores'
         }
 
 #--------------------------------------------------------------------------
 # End of code for file named 16N.
 #--------------------------------------------------------------------------
+
+
+

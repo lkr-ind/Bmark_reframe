@@ -95,8 +95,12 @@ class Sphng_Single_Node_ifile(SphngBase_ifile):
         self.num_tasks_per_node = self.mpi_tasks  # MPi tasks on one node. Here it will be same as total mpi tasks.
         
     @run_after('setup')
-    def set_env_variables(self):    
-        self.core_count_1_node = self.current_partition.processor.num_cpus_per_socket
+    def set_env_variables(self):
+
+        if self.current_partition.processor.num_cpus_per_core > 1:
+            self.core_count_1_node = int(self.current_partition.processor.num_cpus/self.current_partition.processor.num_cpus_per_core)
+        else:    
+            self.core_count_1_node = self.current_partition.processor.num_cpus
 
         self.thread_count = str(int(self.core_count_1_node/self.num_tasks_per_node))
         
@@ -162,7 +166,10 @@ class Sphng_Strong_Scaling_ifile(SphngBase_ifile):
     @run_after('setup')
     def set_env_variables(self):
             
-        self.core_count_1_node = self.current_partition.processor.num_cpus_per_socket
+        if self.current_partition.processor.num_cpus_per_core > 1:
+            self.core_count_1_node = int(self.current_partition.processor.num_cpus/self.current_partition.processor.num_cpus_per_core)
+        else:    
+            self.core_count_1_node = self.current_partition.processor.num_cpus
 
         self.thread_count = str(int(self.core_count_1_node/self.num_tasks_per_node))
 
@@ -225,7 +232,10 @@ class Sphng_Weak_Scaling_ifile(SphngBase_ifile):
     @run_after('setup')
     def set_env_variables(self):
 
-        self.core_count_1_node = self.current_partition.processor.num_cpus_per_socket
+        if self.current_partition.processor.num_cpus_per_core > 1:
+            self.core_count_1_node = int(self.current_partition.processor.num_cpus/self.current_partition.processor.num_cpus_per_core)
+        else:    
+            self.core_count_1_node = self.current_partition.processor.num_cpus
 
         self.thread_count = str(int(self.core_count_1_node/self.num_tasks_per_node))
 
@@ -270,4 +280,5 @@ class Sphng_Weak_Scaling_evolution(SphngBase_evolution):
 #------------------------------------------------------------------------------------------------------------------------------------
 # End of weak scaling.
 #------------------------------------------------------------------------------------------------------------------------------------
+
 

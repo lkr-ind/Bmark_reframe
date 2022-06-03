@@ -1,3 +1,10 @@
 .idea/
 **/.DS_Store
 **/build
+__pycache__/
+stage/
+output/
+IC_256/
+IC_322/
+IC_406/
+IC_512/

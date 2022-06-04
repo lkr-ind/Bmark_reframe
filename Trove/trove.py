@@ -15,7 +15,7 @@ class Trove(rfm.RunOnlyRegressionTest):
         self.exclusive_access=True
         self.valid_systems = ['*']
         self.valid_prog_environs = ['*']
-        self.executable = './j-trove.x_19u3'
+        self.executable = './j-trove.x'
         self.postrun_cmds = ['tail -n 100 output.txt']
 
         reference = {

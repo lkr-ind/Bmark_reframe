@@ -14,7 +14,7 @@ class SphngBase(rfm.RunOnlyRegressionTest):
         self.exclusive_access=True
         self.valid_systems = ['*']
         self.valid_prog_environs = ['*']
-        self.executable = './sph_tree_rk_gradh_20_u2'
+        self.executable = './sph_tree_rk_gradh'
 
 #------------------------------------------------------------------------------------------------------------------------------------
 # End of base class.

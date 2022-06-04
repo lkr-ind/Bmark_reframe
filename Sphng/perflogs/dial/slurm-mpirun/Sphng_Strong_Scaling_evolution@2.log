@@ -1,1 +1,2 @@
 2022-03-25T12:15:43|reframe 3.10.0-dev.3+3125b5ba|Sphng_Strong_Scaling_evolution@2 on dial:slurm-mpirun using intel19-mpi|jobid=91911|num_tasks=16|num_tasks_per_node=4|num_cpus_per_task=32|Total elapsed time=0.937|ref=0 (l=null, u=null)|seconds
+2022-06-04T04:43:26|reframe 3.10.0-dev.3+3125b5ba|Sphng_Strong_Scaling_evolution@2 on dial:slurm-mpirun using intel19-mpi-dial3|jobid=100523|num_tasks=16|num_tasks_per_node=4|num_cpus_per_task=null|Total elapsed time=0.845|ref=0 (l=null, u=null)|minutes

@@ -1,1 +1,2 @@
 2022-03-24T20:54:57|reframe 3.10.0-dev.3+3125b5ba|RamsesMPI_weak_1 on dial:slurm-mpirun using intel-oneapi-openmpi|jobid=91856|num_tasks=128|num_tasks_per_node=128|num_cpus_per_task=null|Total elapsed time=43.787826494|ref=0 (l=null, u=null)|null
+2022-06-04T04:33:08|reframe 3.10.0-dev.3+3125b5ba|RamsesMPI_weak_1 on dial:slurm-mpirun using intel-oneapi-openmpi-dial3|jobid=100472|num_tasks=128|num_tasks_per_node=128|num_cpus_per_task=null|Total elapsed time=46.957810341|ref=0 (l=null, u=null)|null

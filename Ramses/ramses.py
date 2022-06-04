@@ -13,7 +13,7 @@ class RamsesMPI(rfm.RunOnlyRegressionTest):
         self.exclusive_access=True
         self.valid_systems = ['*']
         self.valid_prog_environs = ['*']
-        self.executable = './ramses3d_20'
+        self.executable = './ramses3d'
         self.executable_opts = ['params.nml']
         reference = {
         'dial:slurm-local': {

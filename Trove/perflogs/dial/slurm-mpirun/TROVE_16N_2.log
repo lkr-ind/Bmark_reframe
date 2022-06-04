@@ -1,1 +1,2 @@
 2022-03-25T08:12:28|reframe 3.10.0-dev.3+3125b5ba|TROVE_16N_2 on dial:slurm-mpirun using intel19-mpi|jobid=91828|num_tasks=64|num_tasks_per_node=16|num_cpus_per_task=8|Total elapsed time=1173.2|ref=0 (l=null, u=null)|seconds
+2022-06-04T05:02:49|reframe 3.10.0-dev.3+3125b5ba|TROVE_16N_2 on dial:slurm-mpirun using intel19-mpi-dial3|jobid=100498|num_tasks=64|num_tasks_per_node=16|num_cpus_per_task=null|Total elapsed time=1244.2|ref=0 (l=null, u=null)|seconds

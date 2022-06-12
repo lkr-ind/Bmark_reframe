@@ -118,7 +118,7 @@ class ReFrameLogFile:
         self.rows = []
 
         for line in open(self.file_path, 'r'):
-           self.rows.append(ReFrameBenchmarkLine(line).values)
+            self.rows.append(ReFrameBenchmarkLine(line).values)
 
     @staticmethod
     def _validated(file_path: str) -> str:
@@ -157,6 +157,28 @@ def create_full_data_frame(relative_root: str) -> pd.DataFrame:
             print(f'Failed to parse {file_path}')
 
     return pd.DataFrame(rows, columns=ReFrameBenchmarkLine.column_names())
+
+
+def correct_num_cpus_per_task(_df: pd.DataFrame) -> None:
+    """
+    Ensure the number of cpus per task is "correct". This applies to the
+    perflogs generated before 08/06/2022, which did not save the correct
+    value of num_cpus_per_task
+    """
+    system_name_to_num_cpus = {'cosma8': 128,
+                               'dial': 128,
+                               'csd3': 76}
+
+    for i, row in _df.iterrows():
+        for system in ('dial', 'cosma8', 'csd3'):
+
+            if system == row['system']:
+                n = int(system_name_to_num_cpus[system]
+                        / row['num_tasks_per_node'])
+
+                _df.loc[i, 'num_cpus_per_task'] = n
+
+    return None
 
 
 # ############################ Plotting specific ##############################
@@ -284,6 +306,8 @@ def plot_ramses_and_sphng_scaling_benchmarks():
 if __name__ == '__main__':
 
     df = create_full_data_frame(relative_root='..')
+    correct_num_cpus_per_task(df)
+    df.to_csv('all_data.csv')
 
     plot_ramses_and_sphng_scaling_benchmarks()
     plot_trove_strong_scaling_benchmarks()

@@ -55,19 +55,25 @@ class Pdsyev(rfm.RunOnlyRegressionTest):
 class PDSYEV_15K(Pdsyev):
 
     tags = {"15K"}
-    num_nodes = parameter(2**i for i in range(0,1))
+    num_omp_cores = parameter(2**i for i in range(0,2))
     
     @run_after('setup')
     def set_job_script_variables(self):
 
+        self.executable_opts = ['< gen_n_15K.inp > output_file.text']
         if self.current_partition.processor.num_cpus_per_core > 1:
             self.core_count_1_node = int(self.current_partition.processor.num_cpus/self.current_partition.processor.num_cpus_per_core)
         else:    
             self.core_count_1_node = self.current_partition.processor.num_cpus 
         
-        self.num_tasks = self.num_nodes * self.core_count_1_node
-        self.num_tasks_per_node = self.core_count_1_node    #We are using the full node with MPI tasks.
-        self.descr = ('Running PDSYEV (15K) on '+ str(self.num_nodes) + ' node/s')
+        self.num_tasks = int(self.core_count_1_node/self.num_omp_cores)
+        self.num_tasks_per_node = self.num_tasks    #Since we are using only one node.
+        self.descr = ('Running PDSYEV (15K) on '+ str(self.num_omp_cores) + ' node/s')
+
+        self.variables= {
+            'OMP_NUM_THREADS':str(self.num_omp_cores),
+            'OMP_PLACES':'cores'
+        }
 
 #--------------------------------------------------------------------------
 # End of code for file named 15K.

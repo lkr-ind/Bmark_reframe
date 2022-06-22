@@ -111,3 +111,7 @@ To generate a pdf report including the benchmarks.
    ```
 
 Note:- Latex and Python are required + the Python requirements (`graphing/requirements.txt`).
+
+### Acknowledgement
+
+We would like to kindly acknowledge the help we received from Kiril Dichev, HPC Consultant, University of Cambridge for providing the reframe code for the Trove_pdsyev benchmark. At present, the repository uses a modified version of what we received from Kiril.
